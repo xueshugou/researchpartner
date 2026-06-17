@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>科研文献搜索导航</title>
+    <style>
+        /* ===== 全局重置 & 基础 ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+            background: #f0f4fa;
+            color: #1e2a44;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 30px 20px;
+        }
+
+        /* ===== 主容器 ===== */
+        .container {
+            width: 100%;
+            max-width: 1320px;
+            background: #ffffff;
+            border-radius: 28px;
+            box-shadow: 0 20px 60px rgba(26, 58, 107, 0.10);
+            padding: 40px 44px 32px;
+            transition: all 0.2s;
+        }
+
+        /* ===== 头部 ===== */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 34px;
+            border-bottom: 2px solid #eef3f9;
+            padding-bottom: 22px;
+        }
+
+        .header-left {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-left h1 {
+            font-size: 30px;
+            font-weight: 700;
+            color: #0f2a4a;
+            letter-spacing: 1px;
+            line-height: 1.2;
+        }
+
+        .header-left h1 span {
+            color: #2d6bb8;
+        }
+
+        .header-left .subtitle {
+            font-size: 15px;
+            color: #5e6f8d;
+            margin-top: 6px;
+            letter-spacing: 0.3px;
+            font-weight: 400;
+        }
+
+        .header-left .subtitle i {
+            font-style: normal;
+            background: #eaf1fb;
+            padding: 2px 12px;
+            border-radius: 20px;
+            color: #1a4b7a;
+            font-size: 13px;
+            margin-left: 6px;
+        }
+
+        /* ===== 主体：左右两栏 ===== */
+        .main {
+            display: flex;
+            gap: 36px;
+            align-items: flex-start;
+        }
+
+        /* ===== 左栏：内容区 ===== */
+        .content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        /* ===== 分类卡片 ===== */
+        .category {
+            background: #f9fbfe;
+            border-radius: 18px;
+            padding: 20px 22px 22px;
+            margin-bottom: 24px;
+            border: 1px solid #e8edf5;
+            transition: box-shadow 0.25s;
+        }
+
+        .category:hover {
+            box-shadow: 0 6px 20px rgba(26, 58, 107, 0.06);
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+            border-bottom: 2px solid #e3eaf3;
+            padding-bottom: 12px;
+        }
+
+        .category-header .icon {
+            font-size: 22px;
+            line-height: 1;
+        }
+
+        .category-header h2 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #132c4a;
+            letter-spacing: 0.5px;
+        }
+
+        .category-header .badge {
+            background: #dae6f5;
+            color: #1a4b7a;
+            font-size: 12px;
+            padding: 1px 12px;
+            border-radius: 30px;
+            font-weight: 500;
+            margin-left: auto;
+            white-space: nowrap;
+        }
+
+        /* ===== 链接网格 ===== */
+        .link-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px 14px;
+        }
+
+        .link-grid a {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 14px;
+            background: #ffffff;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #1e3a5f;
+            text-decoration: none;
+            border: 1px solid #e3eaf3;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .link-grid a .dot {
+            flex-shrink: 0;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #2d6bb8;
+            opacity: 0.5;
+            transition: opacity 0.2s;
+        }
+
+        .link-grid a:hover {
+            background: #e9f0fa;
+            border-color: #b3cce5;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(45, 107, 184, 0.10);
+        }
+
+        .link-grid a:hover .dot {
+            opacity: 1;
+            background: #1a4b7a;
+        }
+
+        .link-grid a .name {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* ===== 右栏：二维码 ===== */
+        .sidebar {
+            flex: 0 0 220px;
+            width: 220px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: #f9fbfe;
+            border-radius: 18px;
+            padding: 28px 18px 24px;
+            border: 1px solid #e8edf5;
+            position: sticky;
+            top: 30px;
+            text-align: center;
+            box-shadow: 0 4px 16px rgba(26, 58, 107, 0.04);
+            transition: box-shadow 0.25s;
+        }
+
+        .sidebar:hover {
+            box-shadow: 0 8px 28px rgba(26, 58, 107, 0.08);
+        }
+
+        .sidebar .qr-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #132c4a;
+            margin-bottom: 14px;
+            letter-spacing: 0.5px;
+        }
+
+        .sidebar .qr-title i {
+            font-style: normal;
+            display: inline-block;
+            margin-right: 6px;
+        }
+
+        .sidebar .qr-wrapper {
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 12px;
+            border: 1px solid #e3eaf3;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+            width: 100%;
+            max-width: 180px;
+        }
+
+        .sidebar .qr-wrapper img {
+            display: block;
+            width: 100%;
+            height: auto;
+            border-radius: 6px;
+            background: #f0f4fa;
+        }
+
+        .sidebar .qr-caption {
+            margin-top: 16px;
+            font-size: 15px;
+            color: #1e3a5f;
+            font-weight: 500;
+            letter-spacing: 0.8px;
+            padding: 4px 12px;
+            background: #eaf1fb;
+            border-radius: 30px;
+            display: inline-block;
+        }
+
+        .sidebar .qr-caption i {
+            font-style: normal;
+            margin-right: 4px;
+        }
+
+        /* ===== 页脚 ===== */
+        .footer {
+            margin-top: 34px;
+            padding-top: 18px;
+            border-top: 1px solid #eef3f9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            font-size: 13px;
+            color: #7b8aa5;
+        }
+
+        .footer .hint {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .footer .hint span {
+            background: #eef3f9;
+            padding: 2px 12px;
+            border-radius: 30px;
+            font-size: 12px;
+            color: #3a5a7a;
+        }
+
+        .footer a {
+            color: #2d6bb8;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* ===== 响应式 ===== */
+        @media (max-width: 1024px) {
+            .container {
+                padding: 28px 24px 24px;
+            }
+            .sidebar {
+                flex: 0 0 190px;
+                width: 190px;
+                padding: 22px 14px 20px;
+            }
+            .sidebar .qr-wrapper {
+                max-width: 150px;
+                padding: 10px;
+            }
+            .link-grid {
+                gap: 8px 10px;
+            }
+            .link-grid a {
+                font-size: 13px;
+                padding: 8px 12px;
+            }
+        }
+
+        @media (max-width: 820px) {
+            .main {
+                flex-direction: column;
+                gap: 28px;
+            }
+            .sidebar {
+                flex: 1 1 auto;
+                width: 100%;
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 16px 28px;
+                padding: 20px 24px;
+                position: static;
+                top: auto;
+            }
+            .sidebar .qr-title {
+                margin-bottom: 0;
+                width: 100%;
+                text-align: center;
+            }
+            .sidebar .qr-wrapper {
+                max-width: 140px;
+                padding: 10px;
+                flex-shrink: 0;
+            }
+            .sidebar .qr-caption {
+                margin-top: 0;
+                align-self: center;
+            }
+            .header-left h1 {
+                font-size: 26px;
+            }
+            .container {
+                padding: 24px 18px 20px;
+            }
+        }
+
+        @media (max-width: 580px) {
+            .link-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            .header-left h1 {
+                font-size: 22px;
+            }
+            .container {
+                padding: 18px 14px 16px;
+                border-radius: 18px;
+            }
+            .category {
+                padding: 16px 14px 18px;
+            }
+            .category-header h2 {
+                font-size: 16px;
+            }
+            .link-grid a {
+                font-size: 12px;
+                padding: 7px 10px;
+                white-space: normal;
+                word-break: break-word;
+            }
+            .sidebar {
+                padding: 16px 14px;
+                gap: 12px;
+            }
+            .sidebar .qr-wrapper {
+                max-width: 120px;
+                padding: 8px;
+            }
+            .sidebar .qr-caption {
+                font-size: 13px;
+                padding: 3px 14px;
+            }
+            .footer {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .link-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 6px;
+            }
+            .link-grid a {
+                font-size: 11px;
+                padding: 6px 8px;
+                border-radius: 8px;
+            }
+            .link-grid a .dot {
+                width: 4px;
+                height: 4px;
+            }
+            .header-left h1 {
+                font-size: 19px;
+            }
+            .header-left .subtitle {
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <!-- ===== 头部 ===== -->
+        <header class="header">
+            <div class="header-left">
+                <h1>📚 科研文献 <span>搜索导航</span></h1>
+                <div class="subtitle">
+                    汇集国内外权威学术资源 · 一键直达
+                    <i>收录 26 个常用平台</i>
+                </div>
+            </div>
+            <div style="font-size:14px;color:#5e6f8d;background:#f0f4fa;padding:4px 16px;border-radius:30px;">
+                🎯 科研加速器
+            </div>
+        </header>
+
+        <!-- ===== 主体 ===== -->
+        <div class="main">
+
+            <!-- 左栏：内容 -->
+            <div class="content">
+
+                <!-- 1. 中文核心资源 -->
+                <section class="category">
+                    <div class="category-header">
+                        <span class="icon">🇨🇳</span>
+                        <h2>中文核心资源</h2>
+                        <span class="badge">6 个</span>
+                    </div>
+                    <div class="link-grid">
+                        <a href="https://www.cnki.net/" target="_blank" rel="noopener noreferrer">
+                            <span class="dot"></span><span class="name">中国知网</span>
+                        </a>
+                        <a href="https://www.wanfangdata.com.cn/" target="_blank" rel="noopener noreferrer">
+                            <span class="dot"></span><span class="name">万方数据</span>
+                        </a>
+                        <a href="http://www.cqvip.com/" target="_blank" rel="noopener noreferrer">
+                            <span class="dot"></span><span class="name">维普</span>
+                        </a>
+                        <a href="https://www.ncpssd.cn/" target="_blank" rel="noopener noreferrer">
+                            <span class="dot"></span><span class="name">国家哲学社科</span>
+                        </a>
+                        <a href="https://xueshu.baidu.com/" target="_blank" rel="noopener noreferrer">
+                            <span class="dot"></span><span class="name">百度学术</span>
+                        </a>
+                        <a href="http://www.sciencechina.cn/simple" target="_blank" rel="noopener noreferrer">
+                            <span class="dot"></span><span class="name">中国科学引文数据库(CSCD)</span>
+                        </a>
+                    </div>
+                </section>
+
+                <!-- 2. 国际权威数据库 -->
+                <section class="category">
+                    <div class="category-header">
+                        <span class="icon">🌍</span>
+                        <h2>国际权威数据库</h2>
+                        <span class="badge">6 个</span>
+                    </div>
+                    <div class="link-grid">
+                        <a href="https://webofscience.clarivate.cn/wos/woscc/basic-search" target="_blank" rel="noopener noreferrer">
+                            <span class="dot"></span><span class="name">Web of Science</span>
+                        </a>
+                        <a href="https://www.sciencedirect.com/" target="_blank" rel="noopener noreferrer">
+                            <span class="dot"></span><span class="name">ScienceDirect</span>
+                        </a>
+                        <a href="https://www.scopus.com/" target="_blank" rel="noopener noreferrer">
+                            <span class="dot"></span><span class="name">Scopus</span>
+                        </a>
+                        <a href="https://pubmed.ncbi.nlm.nih.gov/" target="_blank" rel="noopener noreferrer">
+                            <span class="dot"></span><span class="name">PubMed</span>
+                        </a>
+                        <a href="https://ieeexplore.ieee.org/" target="_blank" rel="noopener noreferrer">
+                            <span class="dot"></span><span class="name">IEEE Xplore</span>
+                        </a>
+                        <a href="https://link.springer.com/" target="_blank" rel="noopener noreferrer">
+                            <span class="dot"></span><span class="name">SpringerLink</span>
+                        </a>
+                    </div>
+                </section>
+
+                <!-- 3. 开放获取与公益平台 -->
+                <section class="category">
+                    <div class="category-header">
+                        <span class="icon">🔓</span>
+                        <h2>开放获取 &amp; 公益平台</h2>
+                        <span class="badge">5 个</span>
+                    </div>
+                    <div class="link-grid">
+                        <a href="https://pubscholar.cn/" target="_blank" rel="noopener noreferrer">
+                            <span class="dot"></span><span class="name">PubScholar</span>
+                        </a>
+                        <a href="https://www.socolar.com/" target="_blank" rel="noopener noreferrer">
+                            <span class="dot"></span><span class="name">Socolar</span>
+                        </a>
+                        <a href="http://www.paper.edu.cn/" target="_blank" rel="noopener noreferrer">
+                            <span class="dot"></span><span class="name">中国科技论文在线</span>
+                        </a>
+                        <a href="http://www.duxiu.com/" target="_blank" rel="noopener noreferrer">
+                            <span class="dot"></span><span class="name">读秀学术搜索</span>
+                        </a>
+                        <a href="https://kd.nsfc.cn/resultInit" target="_blank" rel="noopener noreferrer">
+                            <span class="dot"></span><span class="name">大数据知识管理门户</span>
+                        </a>
+                    </div>
+                </section>
+
+                <!-- 4. 预印本与学术工具 -->
+                <section class="category">
+                    <div class="category-header">
+                        <span class="icon">⚡</span>
+                        <h2>预印本 &amp; 学术工具</h2>
+                        <span class="badge">9 个</span>
+                    </div>
+                    <div class="link-grid">
+                        <a href="https://arxiv.org/" target="_blank" rel="noopener noreferrer">
+                            <span class="dot"></span><span class="name">arXiv</span>
+                        </a>
+                        <a href="https://www.biorxiv.org/" target="_blank" rel="noopener noreferrer">
+                            <span class="dot"></span><span class="name">bioRxiv</span>
+                        </a>
+                        <a href="https://www.medrxiv.org/" target="_blank" rel="noopener noreferrer">
+                            <span class="dot"></span><span class="name">medRxiv</span>
+                        </a>
+                        <a href="http://chinaxiv.org/" target="_blank" rel="noopener noreferrer">
+                            <span class="dot"></span><span class="name">ChinaXiv</span>
+                        </a>
+                        <a href="http://www.489.org/" target="_blank" rel="noopener noreferrer">
+                            <span class="dot"></span><span class="name">Google Scholar</span>
+                        </a>
+                        <a href="https://www.researchgate.net/" target="_blank" rel="noopener noreferrer">
+                            <span class="dot"></span><span class="name">ResearchGate</span>
+                        </a>
+                        <a href="https://sci-hub.ren/" target="_blank" rel="noopener noreferrer">
+                            <span class="dot"></span><span class="name">Sci-Hub</span>
+                        </a>
+                        <a href="https://doaj.org/" target="_blank" rel="noopener noreferrer">
+                            <span class="dot"></span><span class="name">DOAJ</span>
+                        </a>
+                        <a href="https://core.ac.uk/" target="_blank" rel="noopener noreferrer">
+                            <span class="dot"></span><span class="name">CORE</span>
+                        </a>
+                    </div>
+                </section>
+
+            </div>
+
+            <!-- 右栏：微信公众号二维码 -->
+            <aside class="sidebar">
+                <div class="qr-title">📱 微信公众号</div>
+                <div class="qr-wrapper">
+                    <!-- 使用在线 QR 生成服务，生成一个示例二维码（可替换为自己的公众号二维码） -->
+                    <img
+                    src=".\公众号二维码.jpg"
+                    alt="微信公众号二维码"
+                    loading="lazy"
+                    />
+                </div>
+                <div class="qr-caption">扫码关注 · 欢迎交流</div>
+                <div style="margin-top:12px;font-size:12px;color:#9aadc5;line-height:1.5;border-top:1px dashed #dce4ed;padding-top:12px;width:100%;">
+                    获取最新学术资源<br>与科研工具推荐
+                </div>
+            </aside>
+
+        </div>
+
+        <!-- ===== 页脚 ===== -->
+        <footer class="footer">
+            <div class="hint">
+                <span>🔗 所有链接均在新窗口打开</span>
+                <span>📌 收藏本页 · 科研必备</span>
+            </div>
+            <div>
+                Made with ❤️  ·  持续更新
+            </div>
+        </footer>
+
+    </div>
+
+</body>
+</html>
